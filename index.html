@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Countdown Timer with Music (H/M/S)</title>
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1#countdown {
+      font-size: 6rem;
+      margin: 30px 0;
+      font-weight: 900;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+    }
+
+    label {
+      font-size: 1.2rem;
+      margin-right: 5px;
+    }
+
+    .time-inputs {
+      margin: 10px 0;
+    }
+
+    select {
+      font-size: 1.5rem;
+      padding: 5px 10px;
+      margin: 0 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      box-shadow: 0 0 5px rgba(255,255,255,0.6);
+      background-color: rgba(255, 255, 255, 0.15);
+      color: white;
+      cursor: pointer;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      text-align-last: center;
+    }
+
+    button {
+      background: #ff6f61;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      padding: 10px 30px;
+      font-weight: 700;
+      box-shadow: 0 4px 10px rgba(255,111,97,0.6);
+      transition: background 0.3s ease;
+      margin-top: 10px;
+      font-size: 1.5rem;
+    }
+
+    button:hover {
+      background: #ff8a78;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px 50px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="time-inputs">
+      <label for="hours">Hours:</label>
+      <select id="hours"></select>
+
+      <label for="minutes">Minutes:</label>
+      <select id="minutes"></select>
+
+      <label for="seconds">Seconds:</label>
+      <select id="seconds"></select>
+    </div>
+
+    <button id="startBtn">Start</button>
+
+    <h1 id="countdown">00:00:00</h1>
+
+    <audio id="alarmSound" src="file:///C:/Users/Admin/Downloads/dc2h82qjad.mp3" preload="auto"></audio>
+  </div>
+
+  <script>
+    function fillSelect(id, start, end) {
+      const select = document.getElementById(id);
+      for(let i = start; i <= end; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.text = i.toString().padStart(2,'0');
+        select.appendChild(option);
+      }
+    }
+
+    fillSelect('hours', 0, 23);
+    fillSelect('minutes', 0, 59);
+    fillSelect('seconds', 0, 59);
+
+    const countdownEl = document.getElementById('countdown');
+    const alarmSound = document.getElementById('alarmSound');
+    const startBtn = document.getElementById('startBtn');
+    const hoursSelect = document.getElementById('hours');
+    const minutesSelect = document.getElementById('minutes');
+    const secondsSelect = document.getElementById('seconds');
+
+    let timerId = null;
+    let timeLeft = 0;
+
+    function updateCountdown() {
+      if(timeLeft <= 0) {
+        countdownEl.textContent = "Time's up!";
+        alarmSound.play();
+        clearInterval(timerId);
+        return;
+      }
+      let hours = Math.floor(timeLeft / 3600);
+      let minutes = Math.floor((timeLeft % 3600) / 60);
+      let seconds = timeLeft % 60;
+
+      countdownEl.textContent = 
+        `${hours.toString().padStart(2,'0')}:` + 
+        `${minutes.toString().padStart(2,'0')}:` + 
+        `${seconds.toString().padStart(2,'0')}`;
+
+      timeLeft--;
+    }
+
+    startBtn.addEventListener('click', () => {
+      if(timerId) clearInterval(timerId);
+      let h = parseInt(hoursSelect.value);
+      let m = parseInt(minutesSelect.value);
+      let s = parseInt(secondsSelect.value);
+
+      timeLeft = h * 3600 + m * 60 + s;
+      if(timeLeft <= 0) {
+        alert("Please select a time greater than zero.");
+        return;
+      }
+      updateCountdown();
+      timerId = setInterval(updateCountdown, 1000);
+    });
+  </script>
+</body>
+</html>
